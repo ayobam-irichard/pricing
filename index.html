@@ -81,6 +81,38 @@
     background:radial-gradient(circle at 35% 30%, rgba(234,250,243,0.5), rgba(126,203,214,0.08) 70%);
     animation:bubbleFloat ease-in-out infinite;
   }
+  .pond-decor .firefly{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle, rgba(234,250,243,0.95), rgba(163,217,119,0.5) 55%, transparent 75%);
+    box-shadow:0 0 8px 2px rgba(163,217,119,0.5);
+    animation:fireflyDrift ease-in-out infinite, fireflyFlicker ease-in-out infinite;
+  }
+  .pond-decor .reed{
+    position:absolute; bottom:-2%;
+    transform-origin:bottom center;
+    animation:reedSway ease-in-out infinite;
+    opacity:0.55;
+  }
+  .pond-decor .reed svg{ width:100%; height:100%; display:block; }
+  /* soft vignette to deepen the edges and make the glass panel pop */
+  .pond-vignette{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 42%, transparent 45%, rgba(4,16,15,0.55) 100%);
+  }
+  @keyframes fireflyDrift{
+    0%   { transform:translate(0,0); }
+    30%  { transform:translate(8vw,-6vh); }
+    60%  { transform:translate(-5vw,-11vh); }
+    100% { transform:translate(0,0); }
+  }
+  @keyframes fireflyFlicker{
+    0%,100%{ opacity:0.15; }
+    50%{ opacity:0.9; }
+  }
+  @keyframes reedSway{
+    0%,100%{ transform:rotate(-3deg); }
+    50%{ transform:rotate(3deg); }
+  }
   /* Each pad path wanders across a large chunk of the viewport in a
      fixed, repeating loop — up/down/left/right, not just one corner.
      Durations are long (60–110s) so the motion stays slow and calm. */
@@ -211,7 +243,9 @@
     width:30px; height:30px; flex:none; border-radius:8px;
     background:var(--surface-2);
     display:flex; align-items:center; justify-content:center;
+    animation:markBob 4s ease-in-out infinite;
   }
+  @keyframes markBob{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-3px) rotate(-4deg); } }
   .topbar .mark svg{width:16px; height:16px; color:var(--highlight);}
   .topbar .brand{font-family:var(--font-display); font-weight:600; font-size:14.5px; color:var(--text);}
   .topbar .tag{
@@ -227,20 +261,30 @@
     background:rgba(19,60,58,0.4);
     border:1px solid rgba(126,203,214,0.2);
     border-radius:14px;
+    transition:border-color .25s ease;
   }
+  .slots-card.low{ border-color:rgba(242,166,198,0.45); }
   .slots-card .slots-label{ display:flex; flex-direction:column; gap:3px; }
   .slots-card .slots-label .stamp{
     font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.06em;
     text-transform:uppercase; color:var(--text-dim);
   }
-  .slots-card .slots-label .count{ font-family:var(--font-display); font-size:15px; color:var(--text); }
+  .slots-card .slots-label .count{ font-family:var(--font-display); font-size:15px; color:var(--text); transition:color .25s ease; }
+  .slots-card.low .slots-label .count{ color:var(--accent-pink); }
   .slots-row{ display:flex; gap:8px; flex-wrap:wrap; }
   .slots-row .slot{ width:28px; height:28px; flex:0 0 auto; }
   .slots-row .slot svg{ width:100%; height:100%; display:block; }
+  .slots-row .slot:not(.empty){ animation:padGlow 3.2s ease-in-out infinite; }
+  .slots-row .slot:not(.empty):nth-child(2n){ animation-delay:0.6s; }
+  .slots-row .slot:not(.empty):nth-child(3n){ animation-delay:1.2s; }
   .slots-row .slot.empty{
     border-radius:50%;
     background:rgba(4,20,19,0.6);
     border:1.5px solid rgba(126,203,214,0.16);
+  }
+  @keyframes padGlow{
+    0%,100%{ filter:drop-shadow(0 0 0 rgba(126,203,214,0)); }
+    50%{ filter:drop-shadow(0 0 5px rgba(126,203,214,0.6)); }
   }
 
   /* ---------- home / nav screen ---------- */
@@ -253,22 +297,29 @@
   @media (max-width:520px){ .nav-grid{grid-template-columns:1fr;} }
 
   .nav-card{
+    position:relative; overflow:hidden;
     background:var(--surface);
     border:1px solid rgba(63,122,109,0.35);
     border-radius:var(--radius);
     padding:22px 20px 20px;
     text-align:left;
     display:flex; flex-direction:column; gap:16px;
-    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+    transition:background .18s ease, border-color .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
     color:var(--text);
   }
-  .nav-card:hover{background:var(--surface-2); border-color:rgba(126,203,214,0.5);}
-  .nav-card:active{transform:scale(0.99);}
+  .nav-card:hover{
+    background:var(--surface-2); border-color:rgba(126,203,214,0.5);
+    transform:translateY(-3px);
+    box-shadow:0 14px 30px rgba(2,16,15,0.35);
+  }
+  .nav-card:active{transform:translateY(-1px) scale(0.98);}
   .nav-card .illo{
     width:44px; height:44px; border-radius:10px;
     background:rgba(126,203,214,0.12);
     display:flex; align-items:center; justify-content:center;
+    transition:transform .18s ease;
   }
+  .nav-card:hover .illo{ transform:scale(1.08) rotate(-4deg); }
   .nav-card .illo svg{width:22px; height:22px; color:var(--highlight);}
   .nav-card h2{font-size:18px; color:var(--text);}
   .nav-card .from-price{font-family:var(--font-mono); font-size:13px; color:var(--text-dim); margin-top:4px;}
@@ -282,6 +333,7 @@
   /* ---------- "how commissioning works" link + info page ---------- */
   .learn-more-wrap{ margin:22px 0 8px; }
   .learn-more-btn{
+    position:relative; overflow:hidden;
     width:100%;
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     padding:14px 16px;
@@ -291,10 +343,12 @@
     color:var(--text-dim);
     font-family:var(--font-body); font-size:14px; font-weight:600;
     cursor:pointer;
-    transition:background .15s ease, border-color .15s ease, color .15s ease;
+    transition:background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
   }
   .learn-more-btn:hover{ background:rgba(126,203,214,0.12); border-color:rgba(126,203,214,0.6); color:var(--text); }
-  .learn-more-btn svg{ width:14px; height:14px; flex:none; }
+  .learn-more-btn:active{ transform:scale(0.98); }
+  .learn-more-btn svg{ width:14px; height:14px; flex:none; transition:transform .15s ease; }
+  .learn-more-btn:hover svg{ transform:translateX(3px); }
 
   .info-intro{ color:var(--text-dim); font-size:14.5px; margin-top:12px; max-width:46ch; line-height:1.6; }
   .info-steps{ display:flex; flex-direction:column; gap:16px; margin:22px 0 6px; }
@@ -316,8 +370,10 @@
     display:inline-flex; align-items:center; gap:6px;
     background:none; border:none; color:var(--text-dim);
     font-size:13.5px; padding:6px 0; margin-bottom:8px;
+    transition:color .15s ease, transform .1s ease;
   }
   .back-btn:hover{color:var(--text);}
+  .back-btn:active{transform:translateX(-2px);}
   .back-btn svg{width:14px; height:14px;}
 
   .page-head{padding:8px 0 6px;}
@@ -345,7 +401,7 @@
   .scroll-row::-webkit-scrollbar-thumb{background:var(--border); border-radius:3px; opacity:0.5;}
 
   .opt-chip{
-    position:relative; flex:none;
+    position:relative; flex:none; overflow:hidden;
     min-width:132px;
     background:var(--surface);
     border:1px solid rgba(63,122,109,0.35);
@@ -353,9 +409,11 @@
     padding:13px 13px 12px;
     text-align:left;
     color:var(--text);
-    transition:background .12s ease, border-color .12s ease;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease, transform .15s cubic-bezier(.34,1.56,.64,1);
   }
-  .opt-chip:hover{border-color:rgba(126,203,214,0.55);}
+  .opt-chip:hover{border-color:rgba(126,203,214,0.55); transform:translateY(-2px);}
+  .opt-chip:active{transform:translateY(0) scale(0.98);}
   .opt-chip .opt-label{font-size:13.5px; font-weight:500; padding-right:16px; display:block;}
   .opt-chip .opt-price{font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-top:8px; display:block;}
   .opt-chip .info-btn{
@@ -365,16 +423,34 @@
     color:var(--text-dim); font-family:var(--font-mono); font-size:10.5px;
     display:flex; align-items:center; justify-content:center; padding:0;
     line-height:1;
+    transition:color .15s ease, border-color .15s ease, transform .15s ease;
   }
-  .opt-chip .info-btn:hover{color:var(--text); border-color:var(--highlight);}
+  .opt-chip .info-btn:hover{color:var(--text); border-color:var(--highlight); transform:scale(1.1);}
 
   .opt-chip.selected{
     background:var(--highlight);
     border-color:var(--highlight);
+    box-shadow:0 6px 18px rgba(126,203,214,0.35);
   }
   .opt-chip.selected .opt-label{color:var(--on-highlight);}
-  .opt-chip.selected .opt-price{color:rgba(7,50,49,0.7);}
+  .opt-chip.selected .opt-price{color:rgba(7,50,49,0.7); padding-right:20px;}
   .opt-chip.selected .info-btn{border-color:rgba(7,50,49,0.4); color:rgba(7,50,49,0.75);}
+  .opt-chip.selected::after{
+    content:"✓";
+    position:absolute; bottom:9px; right:9px;
+    width:16px; height:16px; border-radius:50%;
+    background:var(--on-highlight); color:var(--highlight);
+    font-size:9.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    animation:popIn .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn{ from{ transform:scale(0); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+  button:focus-visible,
+  .opt-chip:focus-visible,
+  [data-nav]:focus-visible{
+    outline:2px solid var(--highlight); outline-offset:2px; border-radius:8px;
+  }
 
   /* ---------- sticky price bar ---------- */
   .price-bar{
@@ -396,17 +472,26 @@
     padding:14px 18px 16px;
     box-shadow:0 -16px 40px rgba(2,16,15,0.5);
   }
-  .price-bar-top{display:flex; align-items:center; gap:10px; cursor:pointer;}
+  .price-bar-top{display:flex; align-items:center; gap:10px; cursor:pointer; transition:opacity .15s ease;}
+  .price-bar-top:active{opacity:0.8;}
   .price-bar-top .label-col{display:flex; flex-direction:column; gap:2px;}
   .price-bar-top .stamp{font-size:12px; color:var(--text-dim);}
   .price-bar-top .total{
     margin-left:auto; font-family:var(--font-mono); font-size:21px; font-weight:600; color:var(--highlight);
   }
-  .price-bar-top .chevron{width:14px; height:14px; color:var(--text-dim); transition:transform .15s ease;}
+  .price-bar-top .chevron{width:14px; height:14px; color:var(--text-dim); transition:transform .2s ease;}
   .price-bar-top .chevron.open{transform:rotate(180deg);}
 
-  .breakdown{max-height:0; overflow:hidden; transition:max-height .2s ease;}
-  .breakdown.open{max-height:260px; overflow-y:auto; margin-top:12px; padding-top:12px; border-top:1px solid rgba(63,122,109,0.3);}
+  .breakdown{
+    display:grid; grid-template-rows:0fr;
+    overflow:hidden;
+    transition:grid-template-rows .3s cubic-bezier(.4,0,.2,1), margin-top .3s ease, padding-top .3s ease;
+  }
+  .breakdown.open{
+    grid-template-rows:1fr;
+    margin-top:12px; padding-top:12px; border-top:1px solid rgba(63,122,109,0.3);
+  }
+  .breakdown-inner{ min-height:0; max-height:220px; overflow-y:auto; }
   .breakdown-row{display:flex; justify-content:space-between; font-size:12.5px; padding:4px 0; color:var(--text-dim);}
   .breakdown-row span:last-child{font-family:var(--font-mono); color:var(--text);}
 
@@ -415,7 +500,13 @@
     position:fixed; inset:0; background:rgba(4,20,19,0.78);
     display:flex; align-items:flex-end; justify-content:center;
     z-index:50; padding:0;
+    animation:overlayIn .2s ease;
   }
+  .modal-overlay.closing{ animation:overlayOut .18s ease forwards; }
+  .modal-overlay.closing .modal-card{ animation:modalOut .18s ease forwards; }
+  @keyframes overlayIn{ from{opacity:0;} to{opacity:1;} }
+  @keyframes overlayOut{ from{opacity:1;} to{opacity:0;} }
+  @keyframes modalOut{ from{opacity:1; transform:translateY(0) scale(1);} to{opacity:0; transform:translateY(14px) scale(0.97);} }
   @media (min-width:560px){
     .modal-overlay{align-items:center; padding:20px;}
   }
@@ -427,20 +518,43 @@
     border-radius:16px 16px 0 0;
     padding:22px 22px 26px;
     max-height:82vh; overflow-y:auto;
+    animation:modalIn .28s cubic-bezier(.34,1.56,.64,1);
   }
+  @keyframes modalIn{ from{opacity:0; transform:translateY(24px) scale(0.96);} to{opacity:1; transform:translateY(0) scale(1);} }
   @media (min-width:560px){ .modal-card{border-radius:16px;} }
   .modal-card .close{
     position:absolute; top:16px; right:16px;
     width:26px; height:26px; border-radius:50%;
     border:1px solid rgba(63,122,109,0.5); background:transparent; color:var(--text-dim);
     display:flex; align-items:center; justify-content:center; font-size:14px;
+    transition:color .15s ease, border-color .15s ease, transform .15s ease;
   }
-  .modal-card .close:hover{color:var(--text); border-color:var(--highlight);}
+  .modal-card .close:hover{color:var(--text); border-color:var(--highlight); transform:rotate(90deg);}
   .modal-card .eyebrow{color:var(--highlight); font-size:11.5px; font-weight:500;}
   .modal-card h3{font-size:18px; padding-right:30px; margin-top:6px;}
   .modal-card .modal-price{font-family:var(--font-mono); color:var(--highlight); font-size:13px; margin-top:8px;}
   .modal-card .modal-media{margin-top:16px; border-radius:10px; overflow:hidden; border:1px solid rgba(63,122,109,0.3);}
+  .modal-card .modal-media img{ transition:transform .35s ease; display:block; }
+  .modal-card .modal-media:hover img{ transform:scale(1.05); }
   .modal-card .modal-desc{margin-top:16px; font-size:14px; line-height:1.65; color:var(--text-dim);}
+
+  /* ---------- click ripple feedback ---------- */
+  .ripple-fx{
+    position:absolute; border-radius:50%;
+    background:rgba(234,250,243,0.35);
+    transform:scale(0); opacity:0.55;
+    animation:rippleFx .55s ease-out forwards;
+    pointer-events:none;
+  }
+  .opt-chip.selected .ripple-fx{ background:rgba(7,50,49,0.25); }
+  @keyframes rippleFx{ to{ transform:scale(1); opacity:0; } }
+
+  /* ---------- view transitions (progressive enhancement) ---------- */
+  ::view-transition-old(root),
+  ::view-transition-new(root){
+    animation-duration:0.32s;
+    animation-timing-function:cubic-bezier(.4,0,.2,1);
+  }
 
   .fade-in{animation:fadeIn .15s ease;}
   @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
@@ -506,7 +620,20 @@
   <div class="pad path-c" style="top:90%; left:82%; width:50px; height:50px; animation-duration:25s; animation-delay:-30s;">
     <svg viewBox="0 0 100 100"><path d="M50 6 A44 44 0 1 1 49.9 6 L50 50 Z" fill="var(--lily)" opacity="0.4"/><path d="M50 50 L28 30 M50 50 L20 55 M50 50 L34 75 M50 50 L66 78 M50 50 L80 58" stroke="#4f8a3f" stroke-width="1.5" opacity="0.4"/></svg>
   </div>
+
+  <div class="reed" style="left:2%; bottom:-2%; width:70px; height:180px; animation-duration:6s;">
+    <svg viewBox="0 0 40 160" fill="none"><path d="M6 160 C4 110 14 70 8 20" stroke="#3f7a6d" stroke-width="4" stroke-linecap="round"/><path d="M18 160 C20 100 10 60 20 6" stroke="#4f8a3f" stroke-width="4" stroke-linecap="round"/><path d="M30 160 C34 120 24 80 32 30" stroke="#3f7a6d" stroke-width="4" stroke-linecap="round"/><ellipse cx="20" cy="6" rx="4" ry="10" fill="#5c3a2e"/><ellipse cx="8" cy="20" rx="3" ry="8" fill="#5c3a2e"/></svg>
+  </div>
+  <div class="reed" style="right:3%; bottom:-2%; width:58px; height:150px; animation-duration:5s; animation-delay:1s;">
+    <svg viewBox="0 0 40 160" fill="none"><path d="M6 160 C4 110 14 70 8 20" stroke="#3f7a6d" stroke-width="4" stroke-linecap="round"/><path d="M18 160 C20 100 10 60 20 6" stroke="#4f8a3f" stroke-width="4" stroke-linecap="round"/><path d="M30 160 C34 120 24 80 32 30" stroke="#3f7a6d" stroke-width="4" stroke-linecap="round"/><ellipse cx="20" cy="6" rx="4" ry="10" fill="#5c3a2e"/><ellipse cx="8" cy="20" rx="3" ry="8" fill="#5c3a2e"/></svg>
+  </div>
+
+  <div class="firefly" style="width:5px; height:5px; top:22%; left:15%; animation-duration:16s, 2.8s;"></div>
+  <div class="firefly" style="width:4px; height:4px; top:60%; left:80%; animation-duration:20s, 3.4s; animation-delay:0s, 1s;"></div>
+  <div class="firefly" style="width:6px; height:6px; top:75%; left:25%; animation-duration:18s, 2.2s; animation-delay:0s, 0.5s;"></div>
+  <div class="firefly" style="width:4px; height:4px; top:12%; left:70%; animation-duration:14s, 3s; animation-delay:0s, 1.8s;"></div>
 </div>
+<div class="pond-vignette" aria-hidden="true"></div>
 
 <!-- ============================================================
      BANNER — content is swapped in automatically per screen by
@@ -724,8 +851,20 @@ const ILLOS = {
 const state = {
   route: "home",       // "home" | a key from PAGES
   selections: {},       // { pageKey: { sectionId: optionId } }
-  breakdownOpen: false
+  breakdownOpen: false,
+  lastTotal: 0          // used to animate the price counter between renders
 };
+
+/* Wraps a state-change + re-render in the View Transitions API when the
+   browser supports it, for a smooth cross-fade between screens. Falls
+   back to an instant update everywhere else. */
+function withTransition(fn){
+  if(document.startViewTransition){
+    document.startViewTransition(fn);
+  } else {
+    fn();
+  }
+}
 
 function ensureSelections(pageKey){
   if(state.selections[pageKey]) return;
@@ -751,11 +890,13 @@ function calcTotal(pageKey){
 }
 
 function go(route){
-  state.route = route;
-  state.breakdownOpen = false;
-  if(PAGES[route]) ensureSelections(route);
-  window.scrollTo(0,0);
-  render();
+  withTransition(() => {
+    state.route = route;
+    state.breakdownOpen = false;
+    if(PAGES[route]) ensureSelections(route);
+    window.scrollTo(0,0);
+    render();
+  });
 }
 
 function iconChevron(cls){
@@ -774,6 +915,8 @@ function iconMark(){
 function renderSlots(){
   const max = Math.max(0, SLOTS.max);
   const available = Math.max(0, Math.min(SLOTS.available, max));
+  const isLow = available > 0 && available <= 1;
+  const isFull = available === 0;
 
   const pads = Array.from({ length: max }).map((_, i) => {
     if(i < available){
@@ -785,11 +928,13 @@ function renderSlots(){
     return `<div class="slot empty" title="Slot taken"></div>`;
   }).join("");
 
+  const label = isFull ? "Fully booked — check back soon" : `${available} of ${max} open`;
+
   return `
-    <div class="slots-card fade-in">
+    <div class="slots-card fade-in ${isLow || isFull ? "low" : ""}">
       <div class="slots-label">
         <span class="stamp">Commission slots</span>
-        <span class="count">${available} of ${max} open</span>
+        <span class="count">${label}</span>
       </div>
       <div class="slots-row">${pads}</div>
     </div>`;
@@ -834,7 +979,7 @@ function renderDetail(pageKey){
       const selected = picks[sec.id] === opt.id;
       const priceLabel = opt.price === 0 ? "included" : ("+$" + opt.price);
       return `
-        <div class="opt-chip ${selected ? "selected" : ""}" data-section="${sec.id}" data-option="${opt.id}">
+        <div class="opt-chip ${selected ? "selected" : ""}" data-section="${sec.id}" data-option="${opt.id}" tabindex="0" role="button" aria-pressed="${selected}">
           <button class="info-btn" data-info-page="${pageKey}" data-info-section="${sec.id}" data-info-option="${opt.id}" aria-label="More info">i</button>
           <span class="opt-label">${opt.label}</span>
           <span class="opt-price mono">${priceLabel}</span>
@@ -856,9 +1001,11 @@ function renderDetail(pageKey){
     `<div class="breakdown-row"><span>${l.label}</span><span>${l.price === 0 ? "included" : "+$" + l.price}</span></div>`
   ).join("");
 
+  const displayStart = state.lastTotal;
   setTimeout(() => {
     const el = document.getElementById("price-total");
-    if(el) el.textContent = "$" + total;
+    if(el) animateCount(el, total);
+    state.lastTotal = total;
   }, 0);
 
   return `
@@ -884,9 +1031,11 @@ function renderDetail(pageKey){
             <span class="stamp">Price estimate</span>
           </div>
           ${iconChevron("chevron" + (state.breakdownOpen ? " open" : ""))}
-          <span class="total" id="price-total">$${total}</span>
+          <span class="total" id="price-total" data-value="${displayStart}">$${displayStart}</span>
         </div>
-        <div class="breakdown ${state.breakdownOpen ? "open" : ""}" id="breakdown-panel">${breakdownRows}</div>
+        <div class="breakdown ${state.breakdownOpen ? "open" : ""}" id="breakdown-panel">
+          <div class="breakdown-inner">${breakdownRows}</div>
+        </div>
       </div>
     </div>
   `;
@@ -941,6 +1090,46 @@ function render(){
   bindEvents();
 }
 
+/* Smoothly counts a $ total from its current displayed value up (or
+   down) to `to`, using an ease-out curve. */
+function animateCount(el, to){
+  const from = parseFloat(el.dataset.value || "0");
+  if(from === to){ el.textContent = "$" + to; el.dataset.value = to; return; }
+  const duration = 450;
+  const start = performance.now();
+  function tick(now){
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(from + (to - from) * eased);
+    el.textContent = "$" + val;
+    if(t < 1){
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = "$" + to;
+      el.dataset.value = to;
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+/* Adds a small expanding-circle click ripple to an element (material-
+   style feedback). Skipped automatically when reduce-motion is on,
+   since the ripple element's own animation is disabled globally. */
+function attachRipple(el){
+  el.addEventListener("pointerdown", (e) => {
+    const rect = el.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 1.6;
+    const span = document.createElement("span");
+    span.className = "ripple-fx";
+    span.style.width = span.style.height = size + "px";
+    span.style.left = (e.clientX - rect.left - size / 2) + "px";
+    span.style.top = (e.clientY - rect.top - size / 2) + "px";
+    el.appendChild(span);
+    span.addEventListener("animationend", () => span.remove());
+    setTimeout(() => span.remove(), 700); // safety net if reduce-motion skips the animation
+  });
+}
+
 function bindEvents(){
   document.querySelectorAll("[data-nav]").forEach(el => {
     el.addEventListener("click", () => go(el.getAttribute("data-nav")));
@@ -953,6 +1142,12 @@ function bindEvents(){
       const optionId = chip.getAttribute("data-option");
       state.selections[state.route][sectionId] = optionId;
       render();
+    });
+    chip.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        chip.click();
+      }
     });
   });
 
@@ -968,6 +1163,8 @@ function bindEvents(){
     });
   });
 
+  document.querySelectorAll(".nav-card, .opt-chip, .learn-more-btn").forEach(attachRipple);
+
   const toggle = document.getElementById("breakdown-toggle");
   if(toggle){
     toggle.addEventListener("click", () => {
@@ -982,7 +1179,7 @@ function openModal(sec, opt){
   const root = document.createElement("div");
   root.className = "modal-overlay";
   root.innerHTML = `
-    <div class="modal-card fade-in">
+    <div class="modal-card">
       <button class="close" aria-label="Close">✕</button>
       <div class="eyebrow">${sec.title}</div>
       <h3>${opt.label}</h3>
@@ -992,7 +1189,11 @@ function openModal(sec, opt){
     </div>
   `;
   document.body.appendChild(root);
-  const close = () => root.remove();
+  const close = () => {
+    root.classList.add("closing");
+    root.addEventListener("animationend", () => root.remove(), { once: true });
+    setTimeout(() => root.remove(), 400); // safety net if reduce-motion skips the animation
+  };
   root.querySelector(".close").addEventListener("click", close);
   root.addEventListener("click", (e) => { if(e.target === root) close(); });
   document.addEventListener("keydown", function esc(e){
